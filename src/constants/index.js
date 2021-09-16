@@ -14,6 +14,7 @@ export const REMOVE_FROM_CATEGORY = 'REMOVE_FROM_CATEGORY';
 export const STOP_REMOVING = 'STOP_REMOVING';
 export const CLEAR_DATES = 'CLEAR_DATES';
 export const SET_STORED_DATA = 'SET_STORED_DATA';
+export const CLEAR_SAVED_CATEGORIES = 'CLEAR_SAVED_CATEGORIES';
 
 export const CATEGORIES = ['Food', 'Online shops', 'Clothes', 'For Home'];
 

@@ -12,9 +12,11 @@ import {
   STOP_REMOVING,
   CLEAR_DATES,
   SET_STORED_DATA,
+  CLEAR_SAVED_CATEGORIES,
 } from '../constants';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AsyncStorage} from 'react-native';
+import {mapCategoriesAndMessages, flatenCategorieEntry} from '../utils';
 
 const storeData = async value => {
   try {
@@ -25,6 +27,16 @@ const storeData = async value => {
   }
 };
 
+const removeValue = async () => {
+  try {
+    await AsyncStorage.removeItem('@storage_Key');
+  } catch (e) {
+    // remove error
+  }
+
+  console.log('Done.');
+};
+
 const initialState = {
   messages: [],
   count: 0,
@@ -32,6 +44,7 @@ const initialState = {
   dates: {firstSmsDate: new Date().getTime()},
   addToCategory: '',
   categories: {},
+  storeData: {},
 };
 
 const reducer = (state = initialState, action) => {
@@ -42,35 +55,48 @@ const reducer = (state = initialState, action) => {
       const edingItems = action.item;
       const newMessages = {...state.messages};
       delete newMessages[edingItems[0]];
-      const categoriesAfterAdd = ({
+      const categoriesAfterAdd = {
         ...state.categories,
         [state.addToCategory]: {
           ...state.categories[state.addToCategory],
-        [edingItems[0]]: edingItems[1],
-        }
-      })
+          [edingItems[0]]: edingItems[1],
+        },
+      };
       storeData(categoriesAfterAdd);
       return {
         ...state,
         messages: newMessages,
-        categories: categoriesAfterAdd
+        categories: categoriesAfterAdd,
+        storeData: categoriesAfterAdd,
       };
     case REMOVE_FROM_CATEGORY:
       const removeItems = action.item;
       const categoryItems = {...state.categories[action.name]};
       delete categoryItems[removeItems[0]];
-      const categoriesAfterRemoval = ({
+      const categoriesAfterRemoval = {
         ...state.categories,
         [action.name]: categoryItems,
-      })
+      };
       storeData(categoriesAfterRemoval);
       return {
         ...state,
         messages: {...state.messages, [removeItems[0]]: removeItems[1]},
         categories: categoriesAfterRemoval,
+        storeData: categoriesAfterRemoval,
       };
     case ADD_ITEMS_MODE:
       return {...state, addToCategory: action.name, removeFromCategory: ''};
+    case CLEAR_SAVED_CATEGORIES:
+      removeValue();
+      return {
+        ...state,
+        storeData: {},
+        categories: {},
+        messages: {
+          ...state.messages,
+          ...flatenCategorieEntry(state.categories),
+        },
+      };
     case REMOVE_ITEMS_MODE:
       return {...state, removeFromCategory: action.name, addToCategory: ''};
     case STOP_ADDING:
@@ -108,12 +134,16 @@ const reducer = (state = initialState, action) => {
         storeData: action.data,
       };
     case RECEIVE_MESSAGES:
+      const {categories, messages} = mapCategoriesAndMessages(
+        state.storeData,
+        action.messages,
+      );
       return {
         ...state,
-        messages: action.messages,
+        messages,
         count: action.count,
         loading: false,
-        categories: {},
+        categories,
         dates: {
           ...state.dates,
           firstSmsDate: action.newFirstSmsDate,

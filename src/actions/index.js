@@ -12,7 +12,8 @@ import {
   REMOVE_FROM_CATEGORY,
   STOP_REMOVING,
   CLEAR_DATES,
-  SET_STORED_DATA
+  SET_STORED_DATA,
+  CLEAR_SAVED_CATEGORIES
 } from '../constants';
 import {filter, convertLocationNames} from '../../src/utils';
 
@@ -32,11 +33,11 @@ export const onAddToCategory = item => ({
 });
 
 export const stopAdding = () => ({
-  type: STOP_ADDING
+  type: STOP_ADDING,
 });
 
 export const stopRemoving = () => ({
-  type: STOP_REMOVING
+  type: STOP_REMOVING,
 });
 
 export const moveToCategory = item => ({
@@ -44,10 +45,14 @@ export const moveToCategory = item => ({
   item,
 });
 
+export const onClearCategories = () => ({
+  type: CLEAR_SAVED_CATEGORIES,
+});
+
 export const onRemoveFromCategory = (item, name) => ({
   type: REMOVE_FROM_CATEGORY,
   item,
-  name
+  name,
 });
 
 export const setMinDate = minDate => ({
@@ -112,12 +117,13 @@ const getMessages = (dispatch, dates) => {
               paymentSmsBody[1].split(' ').splice(-3).join(' ') +
               '----not in BLR';
           }
-          paymentObj[location.trim()] = paymentObj[location]
+          location = location.trim().replace(/[.]$/, '');
+          paymentObj[location] = paymentObj[location]
             ? paymentObj[location] + sum
             : sum;
         }
       });
-      const mockObject ={
+      const mockObject = {
         ' BLR APTEKA N 1 BPSB.': 47.5,
         ' BLR AZS N 9.': 125,
         ' BLR CHTUP OSETRINKAPLYUS.': 2.08,

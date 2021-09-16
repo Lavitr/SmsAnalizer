@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Text, View, Pressable, ScrollView, StyleSheet} from 'react-native';
 import CategoryButtonBlock from './CategoryButtonBlock';
 import TableForCategory from './TableForCategory';
+import ButtonsManageCategories from './ButtonsManageCategories';
 import {CATEGORIES} from '../constants';
 
 const styles = StyleSheet.create({
@@ -74,6 +75,7 @@ export const CategoryTable = ({values, removingName}) => {
             />
           </View>
         ))}
+        <ButtonsManageCategories/>
       </ScrollView>
     </>
   );
