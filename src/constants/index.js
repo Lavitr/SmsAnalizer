@@ -1,6 +1,10 @@
 import {StyleSheet} from 'react-native';
 
+export const PRIOR_BANK = 'Priorbank';
+export const TECHNO_BANK = 'Technobank';
+
 export const ADD_ITEMS_MODE = 'ADD_ITEMS_MODE';
+export const CHANGE_BANK = 'CHANGE_BANK';
 export const MOVE_TO_CATEGORY = 'MOVE_TO_CATEGORY';
 export const REMOVE_ITEMS = 'REMOVE_ITEMS';
 export const REQUEST_MESSAGE = 'REQUEST_MESSAGE';
@@ -81,7 +85,7 @@ export const rowStyles = StyleSheet.create({
   },
   editText: {
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   edit: {
     backgroundColor: '#f59ab2',
@@ -112,6 +116,6 @@ export const rowStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 3,
-    paddingVertical: 3
-  }
+    paddingVertical: 3,
+  },
 });

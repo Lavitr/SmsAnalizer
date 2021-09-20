@@ -13,7 +13,9 @@ import {
   STOP_REMOVING,
   CLEAR_DATES,
   SET_STORED_DATA,
-  CLEAR_SAVED_CATEGORIES
+  CLEAR_SAVED_CATEGORIES,
+  CHANGE_BANK,
+  TECHNO_BANK,
 } from '../constants';
 import {filter, convertLocationNames} from '../../src/utils';
 
@@ -34,6 +36,10 @@ export const onAddToCategory = item => ({
 
 export const stopAdding = () => ({
   type: STOP_ADDING,
+});
+
+export const onChangeBank = () => ({
+  type: CHANGE_BANK,
 });
 
 export const stopRemoving = () => ({
@@ -85,11 +91,12 @@ export const receivedMessages = (messages, count, newFirstSmsDate) => ({
   newFirstSmsDate,
 });
 
-const getMessages = (dispatch, dates) => {
+const getMessages = (dispatch, address, dates) => {
   const paymentObj = {};
   SmsAndroid.list(
     JSON.stringify(
       filter(
+        address,
         dates.minDate ? dates.minDate.getTime() : undefined,
         dates.maxDate ? dates.maxDate.getTime() : undefined,
       ),
@@ -104,23 +111,46 @@ const getMessages = (dispatch, dates) => {
         if (newFirstSmsDate > message.date) {
           newFirstSmsDate = message.date;
         }
-        // arr.slice(0, 20).forEach(message => {
-        const paymentSmsBody = message.body.match(/Oplata(.*)Dostupno/);
-        // console.log('paymentSmsBody', paymentSmsBody);
-        if (paymentSmsBody) {
-          const infoArray = paymentSmsBody[1].trim()?.split('BYN. BLR');
-          const sum = Number(parseFloat(infoArray[0]).toFixed(2));
-          let location = convertLocationNames(infoArray[1]);
-          //when payment was done not in BLR
-          if (!location) {
-            location =
-              paymentSmsBody[1].split(' ').splice(-3).join(' ') +
-              '----not in BLR';
+        if (address === TECHNO_BANK) {
+          console.log('mess', message);
+          const paymentSmsBody = message.body.match(
+            /Retail(.*)BLR OK. Dostupno/,
+          );
+          console.log('paymentSmsBody', paymentSmsBody);
+          if (paymentSmsBody) {
+            const infoArray = paymentSmsBody[1].trim().split(' BYN ');
+            const sum = Number(parseFloat(infoArray[0].replace('-','')).toFixed(2));
+            let location = convertLocationNames(infoArray[1]);
+            //when payment was done not in BLR
+            if (!location) {
+              location =
+                paymentSmsBody[1].split(' ').splice(-3).join(' ') +
+                '----not in BLR';
+            }
+            location = location.trim().replace(/[.]$/, '');
+            paymentObj[location] = paymentObj[location]
+              ? paymentObj[location] + sum
+              : sum;
           }
-          location = location.trim().replace(/[.]$/, '');
-          paymentObj[location] = paymentObj[location]
-            ? paymentObj[location] + sum
-            : sum;
+        } else {
+          // arr.slice(0, 20).forEach(message => {
+          const paymentSmsBody = message.body.match(/Oplata(.*)Dostupno/);
+          // console.log('paymentSmsBody', paymentSmsBody);
+          if (paymentSmsBody) {
+            const infoArray = paymentSmsBody[1].trim()?.split('BYN. BLR');
+            const sum = Number(parseFloat(infoArray[0]).toFixed(2));
+            let location = convertLocationNames(infoArray[1]);
+            //when payment was done not in BLR
+            if (!location) {
+              location =
+                paymentSmsBody[1].split(' ').splice(-3).join(' ') +
+                '----not in BLR';
+            }
+            location = location.trim().replace(/[.]$/, '');
+            paymentObj[location] = paymentObj[location]
+              ? paymentObj[location] + sum
+              : sum;
+          }
         }
       });
       const mockObject = {
@@ -145,9 +175,9 @@ const getMessages = (dispatch, dates) => {
   );
 };
 
-export function fetchMessages(dates) {
+export function fetchMessages(address, dates) {
   return function (dispatch) {
     dispatch(requestMessages());
-    return getMessages(dispatch, dates);
+    return getMessages(dispatch, address, dates);
   };
 }

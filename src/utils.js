@@ -1,9 +1,9 @@
-export const filter = (minDate, maxDate) => ({
+export const filter = (address, minDate, maxDate) => ({
   // bodyRegex: '(.*)Priorbank(.*)',
   // bodyRegex: '(.*)MYASNA(.*)',
   ...(minDate ? {minDate} : {}),
   ...(maxDate ? {maxDate} : {}),
-  address: 'Priorbank',
+  address,
   box: 'inbox',
 });
 

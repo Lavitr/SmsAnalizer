@@ -4,13 +4,13 @@ import {View, Button} from 'react-native';
 import {styles} from '../../src/constants';
 import {fetchMessages} from '../actions';
 
-let ButtonMain = ({getMessages, dates}) => (
+let ButtonMain = ({getMessages, dates, address}) => (
   <View style={styles.mainButtonContainer}>
     <Button
       color="#1196b8"
       title={'Load Mesages'}
       onPress={() => {
-        getMessages(dates);
+        getMessages(address, dates);
       }}
     />
   </View>
@@ -18,6 +18,7 @@ let ButtonMain = ({getMessages, dates}) => (
 
 const mapStateToProps = state => ({
   dates: state.dates,
+  address: state.address
 });
 
 const mapDispatchToProps = {

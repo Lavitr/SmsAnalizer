@@ -13,10 +13,12 @@ import {
   CLEAR_DATES,
   SET_STORED_DATA,
   CLEAR_SAVED_CATEGORIES,
+  CHANGE_BANK
 } from '../constants';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AsyncStorage} from 'react-native';
 import {mapCategoriesAndMessages, flatenCategorieEntry} from '../utils';
+import {PRIOR_BANK, TECHNO_BANK} from '../constants';
 
 const storeData = async value => {
   try {
@@ -38,6 +40,7 @@ const removeValue = async () => {
 };
 
 const initialState = {
+  address: PRIOR_BANK,
   messages: [],
   count: 0,
   loading: false,
@@ -86,6 +89,11 @@ const reducer = (state = initialState, action) => {
       };
     case ADD_ITEMS_MODE:
       return {...state, addToCategory: action.name, removeFromCategory: ''};
+    case CHANGE_BANK:
+      return {
+        ...state,
+        address: state.address === PRIOR_BANK ? TECHNO_BANK : PRIOR_BANK,
+      };
     case CLEAR_SAVED_CATEGORIES:
       removeValue();
       return {
