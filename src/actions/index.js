@@ -112,11 +112,9 @@ const getMessages = (dispatch, address, dates) => {
           newFirstSmsDate = message.date;
         }
         if (address === TECHNO_BANK) {
-          console.log('mess', message);
           const paymentSmsBody = message.body.match(
             /Retail(.*)BLR OK. Dostupno/,
           );
-          console.log('paymentSmsBody', paymentSmsBody);
           if (paymentSmsBody) {
             const infoArray = paymentSmsBody[1].trim().split(' BYN ');
             const sum = Number(parseFloat(infoArray[0].replace('-','')).toFixed(2));

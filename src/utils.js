@@ -83,7 +83,6 @@ export const mapCategoriesAndMessages = (savedCategories, messages) => {
     }
     categories[i] = nobj;
   }
-  console.log('dd', keyArray);
   keyArray.forEach(item => {
     delete updatedMessages[item];
   });
